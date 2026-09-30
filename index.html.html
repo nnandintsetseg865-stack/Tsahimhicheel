@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Хичээлийн тоглоом: 3-р анги</title>
+<style>
+:root{--bg:#fff6dd;--card:#fffdf5;--ink:#1c2b45;--blue:#1d5fa6;--red:#d43a3a;--gold:#f2b632;--ok:#2e9d5b;--line:#e6d6a6;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101a2c;--card:#182640;--ink:#f6efdc;--line:#2c4166;--blue:#6aa8ee;--red:#ff7b6e}}
+:root[data-theme="dark"]{--bg:#101a2c;--card:#182640;--ink:#f6efdc;--line:#2c4166;--blue:#6aa8ee;--red:#ff7b6e}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;min-height:100vh}
+.wrap{max-width:640px;margin:0 auto;padding:14px}
+header{display:flex;justify-content:space-between;align-items:center}
+h1{margin:0;font-size:1.5rem}
+#stars{font-size:1.2rem;font-weight:bold}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+nav button{flex:1 1 30%;padding:10px 6px;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:14px;font:inherit;font-weight:bold;cursor:pointer}
+nav button.m{border-color:var(--red)}
+nav button[aria-current="true"]{background:var(--blue);border-color:var(--blue);color:#fff}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:16px;text-align:center}
+#grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:8px;margin-top:12px}
+#grid button,.opt{font:inherit;font-weight:bold;font-size:1.5rem;background:var(--card);border:2px solid var(--blue);color:var(--blue);border-radius:14px;padding:10px 4px;cursor:pointer}
+#grid button.v,.opt.v{border-color:var(--red);color:var(--red)}
+.big{font-size:4.5rem;line-height:1.1;font-weight:bold;color:var(--blue)}
+.emo{font-size:4.2rem;line-height:1.2}
+.word{font-size:2.1rem;letter-spacing:.08em;margin:6px 0;min-height:1.3em}
+.sent{font-size:1.5rem;line-height:1.5;margin:10px 0}
+.opts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
+.opts.tiles{grid-template-columns:repeat(auto-fit,minmax(58px,1fr))}
+.opt{font-size:1.8rem;padding:14px 6px}
+.opt.sel{background:var(--gold);border-color:var(--gold);color:#2b1e00}
+.opt.used{opacity:.3}
+.opt.good{background:var(--ok);border-color:var(--ok);color:#fff;animation:pop .4s}
+.opt.bad{border-color:var(--red);background:var(--red);color:#fff;animation:shake .4s}
+.msg{min-height:1.6em;font-weight:bold;margin-top:10px;font-size:1.1rem}
+.small{font-size:.85rem;opacity:.8;margin-top:8px}
+.go{margin-top:12px;font:inherit;font-weight:bold;font-size:1.05rem;background:var(--gold);color:#2b1e00;border:0;border-radius:14px;padding:11px 20px;cursor:pointer}
+.go.alt{background:transparent;border:2px solid var(--line);color:var(--ink);margin-left:6px}
+@keyframes pop{50%{transform:scale(1.12)}}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media (prefers-reduced-motion:reduce){.opt{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><h1>Хичээлийн тоглоом · 3-р анги</h1><div id="stars" aria-label="Оноо">⭐ 0</div></header>
+<nav id="nav">
+  <button data-v="abc" aria-current="true">Цагаан толгой</button>
+  <button data-v="miss">Дутуу үсэг</button>
+  <button data-v="build">Үг эвлүүл</button>
+  <button data-v="sent">Өгүүлбэр</button>
+  <button data-v="vow">Эгшиг ол</button>
+  <button data-v="add" class="m">Нэмэх, хасах</button>
+  <button data-v="mul" class="m">Үржих, хуваах</button>
+  <button data-v="cmp" class="m">Харьцуул</button>
+  <button data-v="word" class="m">Бодлого</button>
+</nav>
+<main id="main"></main>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const ALPHA='АБВГДЕЁЖЗИЙКЛМНОӨПРСТУҮФХЦЧШЩЪЫЬЭЮЯ'.split('');
+const VOW='АЭИОУӨҮЫЕЁЮЯ';
+const PLAY=ALPHA.filter(c=>!'ЪЬЫЩ'.includes(c));
+const WORDS=[['морь','🐴'],['тэмээ','🐪'],['хонь','🐑'],['ямаа','🐐'],['үхэр','🐄'],['нохой','🐕'],['муур','🐈'],['шувуу','🐦'],['загас','🐟'],['чоно','🐺'],['бүргэд','🦅'],['луу','🐉'],['тахиа','🐓'],['гэр','🛖'],['ном','📖'],['дэвтэр','📓'],['харандаа','✏️'],['цүнх','🎒'],['нар','☀️'],['сар','🌙'],['од','⭐'],['үүл','☁️'],['цас','❄️'],['бороо','🌧️'],['салхи','💨'],['гал','🔥'],['ус','💧'],['мод','🌳'],['цэцэг','🌸'],['уул','⛰️'],['өндөг','🥚'],['талх','🍞'],['сүү','🥛'],['алим','🍎'],['чихэр','🍬'],['машин','🚗'],['онгоц','✈️'],['цаг','⏰'],['гар','✋'],['нүд','👁️'],['малгай','🧢'],['гутал','👟']];
+const SENT=[['Загас ___ дотор сэлдэг.','ус','мод','гэр'],['Шувуу тэнгэрт ___.','нисдэг','сэлдэг','гүйдэг'],['Өдөр ___ гэрэлтдэг.','нар','мод','ном'],['Бид ном ___.','уншина','иднэ','сэлнэ'],['Өвөл ___ ордог.','цас','цэцэг','жимс'],['Хонь ___ иддэг.','өвс','чулуу','цаас'],['Бороо орсны дараа ___ гардаг.','солонго','цас','гал'],['Багш сурагчдад ___ заадаг.','хичээл','цас','гал'],['Ээж хоол ___.','хийнэ','нисэнэ','цасална'],['Зун цаг агаар ___ байдаг.','дулаан','хүйтэн','хатуу'],['Тэмээ ___ газарт амьдардаг.','говь','далай','мөс'],['Сүүг ___ дээр хийж уудаг.','аяга','гутал','малгай']];
+const byL={};WORDS.forEach(w=>{const k=w[0][0].toUpperCase();if(!byL[k])byL[k]=w;});
+let stars=0,view='abc',busy=false;
+try{stars=+localStorage.getItem('uu3-stars')||0;}catch(e){}
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+const isV=c=>VOW.includes(c.toUpperCase());
+function speak(t){try{const u=new SpeechSynthesisUtterance(t);u.lang='mn-MN';u.rate=.8;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
+function addStar(){stars++;$('stars').textContent='⭐ '+stars;try{localStorage.setItem('uu3-stars',stars);}catch(e){}}
+$('stars').textContent='⭐ '+stars;
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{view=b.dataset.v;document.querySelectorAll('#nav button').forEach(x=>x.setAttribute('aria-current',x===b));view==='abc'?abc():play(view);});
+function abc(){
+  $('main').innerHTML='<div class="card" id="det"><div class="big">Аа</div><div class="msg">Үсэг дээр дарж сонсоорой</div></div><div id="grid"></div><div class="small">Улаан үсэг нь эгшиг, цэнхэр үсэг нь гийгүүлэгч. Монгол хэлэнд 13 эгшиг, 20 гийгүүлэгч үсэг байдаг.</div>';
+  ALPHA.forEach(c=>{const b=document.createElement('button');b.textContent=c;if(isV(c))b.className='v';b.onclick=()=>{
+    const w=byL[c],kind=c==='Ъ'||c==='Ь'?'тэмдэг':isV(c)?'эгшиг':'гийгүүлэгч';
+    $('det').innerHTML='<div class="big">'+c+c.toLowerCase()+'</div><div class="msg">'+kind+'</div>'+(w?'<div class="emo">'+w[1]+'</div><div class="word">'+w[0]+'</div>':'');
+    speak(w?c.toLowerCase()+'. '+w[0]:c.toLowerCase());};$('grid').appendChild(b);});
+}
+const ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const MATH=['add','mul','cmp','word'];
+function numOpts(ans,ds,fin,say){
+  const S=new Set([ans]);shuffle(ds).forEach(d=>{if(S.size<4&&ans+d>=0&&!S.has(ans+d))S.add(ans+d);});
+  while(S.size<4)S.add(ans+ri(1,9));
+  shuffle([...S]).forEach(n=>{const b=btn(n,'opt');b.onclick=()=>{if(busy)return;const ok=n===ans;b.classList.add(ok?'good':'bad');
+    if(!ok)[...$('o').children].forEach(x=>{if(+x.textContent===ans)x.classList.add('good');});fin(ok,say||String(ans));};$('o').appendChild(b);});
+}
+const big=t=>'<div class="big" style="font-size:2.8rem;margin:8px 0">'+t+'</div>';
+const R={
+ add(fin){let a,b,ans,e;
+  if(Math.random()<.5){a=ri(100,899);b=ri(100,999-a);ans=a+b;e=a+' + '+b;}else{a=ri(200,999);b=ri(100,a-1);ans=a-b;e=a+' − '+b;}
+  $('q').innerHTML=big(e+' = ?');$('m').textContent='Хариуг ол';numOpts(ans,[1,-1,10,-10,100,-100],fin,e+' = '+ans);},
+ mul(fin){const a=ri(2,9),b=ri(2,9);let e,ans;
+  if(Math.random()<.6){e=a+' × '+b;ans=a*b;}else{e=(a*b)+' ÷ '+a;ans=b;}
+  $('q').innerHTML=big(e+' = ?');$('m').textContent='Хариуг ол';numOpts(ans,[1,-1,a,-a,b,-b,10,-10],fin,e+' = '+ans);},
+ cmp(fin){const a=ri(10,60),b=ri(10,60),L=a+b,Rr=L+ri(-6,6),ans=L<Rr?'<':L>Rr?'>':'=';
+  $('q').innerHTML=big(a+' + '+b+' ○ '+Rr);$('m').textContent='Аль тэмдэг тохирох вэ?';$('o').className='opts tiles';
+  ['<','=','>'].forEach(t=>{const bt=btn(t,'opt');bt.onclick=()=>{if(busy)return;const ok=t===ans;bt.classList.add(ok?'good':'bad');
+    if(!ok)[...$('o').children].forEach(x=>{if(x.textContent===ans)x.classList.add('good');});fin(ok,a+' + '+b+' = '+L+', '+L+' '+ans+' '+Rr);};$('o').appendChild(bt);});},
+ word(fin){const O=rnd(['алим','харандаа','чихэр','дэвтэр','ном']),t=ri(0,3);let txt,ans,a=ri(3,9),b=ri(2,9);
+  if(t===0){a=ri(20,90);b=ri(10,60);ans=a+b;txt='Хүүхдэд '+a+' ширхэг '+O+' байв. Дараа нь тэр '+b+' ширхэг '+O+' авав. Нийт хэдэн ширхэг болов?';}
+  else if(t===1){a=ri(50,99);b=ri(10,49);ans=a-b;txt='Хүүхдэд '+a+' ширхэг '+O+' байв. Тэр '+b+' ширхгийг нь найздаа өгөв. Хэдэн ширхэг үлдсэн бэ?';}
+  else if(t===2){ans=a*b;txt='Нэг хайрцагт '+b+' ширхэг '+O+' байна. '+a+' хайрцагт нийт хэдэн ширхэг '+O+' байх вэ?';}
+  else{ans=b;txt='Нийт '+(a*b)+' ширхэг '+O+' байв. Тэдгээрийг '+a+' хүүхдэд тэнцүү хуваав. Нэг хүүхэд хэдэн ширхэг авах вэ?';}
+  $('q').innerHTML='<div class="sent">'+txt+'</div>';$('m').textContent='Бодлогын хариуг ол';numOpts(ans,[1,-1,a,-a,b,-b,10,-10],fin,String(ans));},
+ miss(fin){const w=rnd(WORDS),L=w[0].toUpperCase().split(''),i=Math.floor(Math.random()*L.length),ans=L[i];
+  $('q').innerHTML='<div class="emo">'+w[1]+'</div><div class="word">'+L.map((c,k)=>k===i?'_':c.toLowerCase()).join('')+'</div>';
+  $('m').textContent='Дутуу үсгийг ол';
+  const pool=shuffle(PLAY.filter(c=>c!==ans&&isV(c)===isV(ans))).slice(0,3);
+  shuffle([ans,...pool]).forEach(c=>{const b=btn(c,isV(c)?'opt v':'opt');b.onclick=()=>{if(busy)return;const ok=c===ans;b.classList.add(ok?'good':'bad');if(!ok)[...$('o').children].forEach(x=>{if(x.textContent===ans)x.classList.add('good');});fin(ok,w[0]);};$('o').appendChild(b);});},
+ build(fin){const w=rnd(WORDS.filter(x=>x[0].length>=3&&x[0].length<=7)),L=w[0].toUpperCase().split('');let sc;do{sc=shuffle(L);}while(sc.join('')===L.join(''));
+  let pick=[];const slots=()=>{$('s').textContent=L.map((_,k)=>k<pick.length?pick[k].c.toLowerCase():'_').join(' ');};
+  $('q').innerHTML='<div class="emo">'+w[1]+'</div><div class="word" id="s"></div>';$('m').textContent='Үсгүүдийг зөв дарааллаар дар';$('o').className='opts tiles';slots();
+  const tiles=sc.map(c=>{const b=btn(c,isV(c)?'opt v':'opt');b.onclick=()=>{if(busy||b.classList.contains('used'))return;pick.push({c,b});b.classList.add('used');slots();
+    if(pick.length===L.length){const ok=pick.map(p=>p.c).join('')===L.join('');fin(ok,w[0]);}};$('o').appendChild(b);return b;});
+  const r=btn('Дахин эхлэх','go alt');r.onclick=()=>{if(busy)return;pick=[];tiles.forEach(t=>t.classList.remove('used'));slots();};$('x').appendChild(r);},
+ sent(fin){const [s,a,...d]=rnd(SENT);$('q').innerHTML='<div class="sent">'+s.replace('___','<b style="color:var(--blue)">_____</b>')+'</div>';$('m').textContent='Тохирох үгийг сонго';
+  shuffle([a,...d]).forEach(t=>{const b=btn(t,'opt');b.style.fontSize='1.4rem';b.onclick=()=>{if(busy)return;const ok=t===a;b.classList.add(ok?'good':'bad');if(!ok)[...$('o').children].forEach(x=>{if(x.textContent===a)x.classList.add('good');});fin(ok,s.replace('___',a));};$('o').appendChild(b);});},
+ vow(fin){const w=rnd(WORDS.filter(x=>x[0].length>=3)),L=w[0].toUpperCase().split('');
+  $('q').innerHTML='<div class="emo">'+w[1]+'</div><div class="word">'+w[0]+'</div>';$('m').textContent='Бүх эгшгийг дарж сонго';$('o').className='opts tiles';
+  const sel=new Set();
+  L.forEach((c,k)=>{const b=btn(c,'opt');b.onclick=()=>{if(busy)return;sel.has(k)?sel.delete(k):sel.add(k);b.classList.toggle('sel',sel.has(k));};$('o').appendChild(b);});
+  const g=btn('Шалгах','go');g.onclick=()=>{if(busy)return;const want=L.map((c,k)=>isV(c)?k:-1).filter(k=>k>=0);
+    const ok=want.length===sel.size&&want.every(k=>sel.has(k));[...$('o').children].forEach((x,k)=>{x.classList.remove('sel');if(isV(L[k]))x.classList.add('good');else if(sel.has(k))x.classList.add('bad');});
+    fin(ok,'эгшиг: '+want.map(k=>L[k]).join(', '));};$('x').appendChild(g);}
+};
+function btn(t,c){const b=document.createElement('button');b.className=c;b.textContent=t;return b;}
+function play(kind){
+  let n=0,score=0;const N=10;
+  function next(){
+    busy=false;
+    if(n>=N){$('main').innerHTML='<div class="card"><div class="big">'+score+'/'+N+'</div><div class="word">'+(score>=9?'Гайхалтай! 🎉':score>=6?'Сайн байна! 👍':'Дахин оролдоё 💪')+'</div><button class="go" id="again">Дахин тоглох</button></div>';$('again').onclick=()=>play(kind);return;}
+    n++;$('main').innerHTML='<div class="card"><div class="small">'+n+' / '+N+'</div><div id="q"></div><div class="opts" id="o"></div><div id="x"></div><div class="msg" id="m"></div></div>';
+    R[kind](fin);
+  }
+  function fin(ok,text){if(busy)return;busy=true;if(ok){score++;addStar();$('m').textContent='Зөв! ⭐ '+text;}else $('m').textContent='Зөв хариулт: '+text;if(!MATH.includes(kind))speak(text.replace(/^эгшиг: /,''));setTimeout(next,1800);}
+  next();
+}
+abc();
+</script>
+</body>
+</html>
